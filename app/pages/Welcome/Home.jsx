@@ -58,7 +58,7 @@ export default function LandingScreen() {
             }}
           >
             <Text className="text-[42px] font-extrabold tracking-wider text-white mb-3">
-              QuickVend
+              RetailOS
             </Text>
             <Text className="text-base text-slate-100 text-center mb-10 leading-6 font-normal">
               Streamline your inventory and sales with one powerful app

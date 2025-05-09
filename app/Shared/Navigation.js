@@ -6,6 +6,7 @@ import LandingScreen from "../pages/Welcome/Home";
 import { useNavigation } from "@react-navigation/native";
 import { useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
+import POSScreen from "../pages/Welcome/Salesfloor/Pos";
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 export default function Tabs() {
@@ -40,6 +41,26 @@ export default function Tabs() {
             }
           },
         })}
+      />
+      <Tab.Screen
+        name="Salesfloor"
+        component={SalesStack}
+        options={{
+          tabBarLabel: "",
+          tabBarIcon: ({ color }) => (
+            <Ionicons name="cart" size={24} color={color} />
+          ),
+        }}
+        // listeners={({ navigation }) => ({
+        //   tabPress: (e) => {
+        //     e.preventDefault();
+        //     if (isLoggedIn) {
+        //       navigation.navigate("Bot");
+        //     } else {
+        //       navigation.navigate("Home");
+        //     }
+        //   },
+        // })}
       />
     </Tab.Navigator>
   );
@@ -81,6 +102,17 @@ function EntryStack() {
             backgroundColor: "transparent",
           },
         }}
+      />
+    </Stack.Navigator>
+  );
+}
+function SalesStack() {
+  return (
+    <Stack.Navigator initialRouteName="Sales">
+      <Stack.Screen
+        name="Sales"
+        component={POSScreen}
+        options={{ headerShown: false }}
       />
     </Stack.Navigator>
   );

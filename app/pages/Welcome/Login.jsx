@@ -65,7 +65,7 @@ export default function LoginScreen() {
             {/* Logo & Welcome Text */}
             <View className="items-center mb-10">
               <Text className="text-3xl font-extrabold text-blue-600 tracking-wider">
-                QuickVend
+                RetailOS
               </Text>
               <Text className="text-lg text-zinc-700 mt-2">
                 Welcome back 👋

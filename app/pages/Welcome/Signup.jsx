@@ -89,7 +89,7 @@ export default function SignupScreen() {
             </Text>
             <Text className="text-base text-zinc-500">
               Sign up to get started with{" "}
-              <Text className="font-semibold text-blue-500">QuickVend</Text>
+              <Text className="font-semibold text-blue-500">RetailOS</Text>
             </Text>
           </View>
 
