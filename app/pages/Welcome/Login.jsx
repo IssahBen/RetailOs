@@ -14,6 +14,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 import { Eye, EyeOff } from "lucide-react-native";
 import { useNavigation } from "@react-navigation/native";
+import { useAuth } from "../../Context/AuthContext";
+import ErrorMessage from "../../messages/ErrorMessage";
 
 export default function LoginScreen() {
   const [email, setEmail] = useState("");
@@ -22,10 +24,10 @@ export default function LoginScreen() {
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const navigation = useNavigation();
-
+  const { login } = useAuth();
   const validateEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     let isValid = true;
 
     if (!email.trim()) {
@@ -49,7 +51,11 @@ export default function LoginScreen() {
     }
 
     if (isValid) {
-      navigation.navigate("(tabs)");
+      const obj = { user: { email: email, password: password } };
+      const res = await login(obj);
+      if (res === "success") {
+        navigation.navigate("Salesfloor");
+      }
     }
   };
 
@@ -62,6 +68,7 @@ export default function LoginScreen() {
             behavior={Platform.OS === "ios" ? "padding" : "height"}
             className="flex-1 px-6 justify-center"
           >
+            <ErrorMessage />
             {/* Logo & Welcome Text */}
             <View className="items-center mb-10">
               <Text className="text-3xl font-extrabold text-blue-600 tracking-wider">

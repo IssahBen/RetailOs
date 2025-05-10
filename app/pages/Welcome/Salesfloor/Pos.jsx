@@ -17,6 +17,9 @@ import {
   CreditCard,
 } from "lucide-react-native";
 import PaymentModal from "./PaymentModal";
+import { useAuth } from "../../../Context/AuthContext";
+
+import LogoutButton from "../../../ui/LogoutScreen";
 const SAMPLE_PRODUCTS = [
   { id: "1", name: "Blue T-Shirt", category: "Apparel", price: 24.99 },
   {
@@ -46,7 +49,7 @@ export default function POSScreen() {
   const [cart, setCart] = useState([]);
   const [products] = useState(SAMPLE_PRODUCTS);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
-
+  const { user } = useAuth();
   const filteredProducts = products.filter((item) => {
     const matchesSearch = item.name
       .toLowerCase()
@@ -97,10 +100,12 @@ export default function POSScreen() {
     <View className="flex-1 flex-row bg-[#F8FAFC]">
       {/* Product Section */}
       <View className="flex-[3] border-r border-zinc-200">
-        <View className="px-6 pt-16 pb-5 bg-white shadow-sm">
-          <Text className="text-3xl font-extrabold text-zinc-900 tracking-tight">
-            Salesfloor
+        <View className="px-6 pt-16 pb-5 bg-white flex-row justify-between shadow-sm relative">
+          <Text className="text-3xl font-extrabold text-zinc-900 tracking-tight ">
+            {user?.business_name}
           </Text>
+          {/* Position LogoutButton at the top-right */}
+          <LogoutButton className="absolute top-5 right-6" />
         </View>
         <View className="px-6 py-4 bg-white border-b border-zinc-100">
           <View className="flex-row items-center bg-zinc-100 rounded-xl px-4 h-12">

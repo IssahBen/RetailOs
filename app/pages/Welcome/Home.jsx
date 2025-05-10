@@ -15,6 +15,7 @@ import {
   Percent,
   TrendingUp,
 } from "lucide-react-native";
+import ErrorMessage from "../../messages/ErrorMessage";
 
 const { width, height } = Dimensions.get("window");
 
@@ -108,6 +109,7 @@ export default function LandingScreen() {
                 Create Account
               </Text>
             </TouchableOpacity>
+            <ErrorMessage />
           </Animated.View>
         </View>
       </ImageBackground>

@@ -7,10 +7,11 @@ import { useNavigation } from "@react-navigation/native";
 import { useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import POSScreen from "../pages/Welcome/Salesfloor/Pos";
+import { useAuth } from "../Context/AuthContext";
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 export default function Tabs() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const { isLoggedIn, setVisible, setErrorMessage } = useAuth(false);
   // eslint-disable-next-line no-unused-vars
   const navigation = useNavigation();
   return (
@@ -23,7 +24,7 @@ export default function Tabs() {
       }}
     >
       <Tab.Screen
-        name="Home"
+        name="Main"
         component={EntryStack}
         options={{
           tabBarLabel: "",
@@ -35,13 +36,14 @@ export default function Tabs() {
           tabPress: (e) => {
             e.preventDefault();
             if (isLoggedIn) {
-              navigation.navigate("Bot");
+              navigation.navigate("Salesfloor");
             } else {
-              navigation.navigate("Home");
+              navigation.navigate("Main");
             }
           },
         })}
       />
+
       <Tab.Screen
         name="Salesfloor"
         component={SalesStack}
@@ -51,16 +53,18 @@ export default function Tabs() {
             <Ionicons name="cart" size={24} color={color} />
           ),
         }}
-        // listeners={({ navigation }) => ({
-        //   tabPress: (e) => {
-        //     e.preventDefault();
-        //     if (isLoggedIn) {
-        //       navigation.navigate("Bot");
-        //     } else {
-        //       navigation.navigate("Home");
-        //     }
-        //   },
-        // })}
+        listeners={({ navigation }) => ({
+          tabPress: (e) => {
+            e.preventDefault();
+            if (isLoggedIn) {
+              navigation.navigate("Salesfloor");
+            } else {
+              navigation.navigate("Main");
+              setErrorMessage("Sign Up || Sign In");
+              setVisible(true);
+            }
+          },
+        })}
       />
     </Tab.Navigator>
   );

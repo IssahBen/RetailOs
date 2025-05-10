@@ -12,6 +12,8 @@ import { SafeAreaView } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { Eye, EyeOff, Check } from "lucide-react-native";
 import { useNavigation } from "@react-navigation/native";
+import { useAuth } from "../../Context/AuthContext";
+import ErrorMessage from "../../messages/ErrorMessage";
 
 export default function SignupScreen() {
   const navigation = useNavigation();
@@ -27,10 +29,12 @@ export default function SignupScreen() {
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const [confirmPasswordError, setConfirmPasswordError] = useState("");
-
+  const [number, setNumber] = useState("");
+  const [numberError, setNumberError] = useState();
+  const { signup } = useAuth();
   const validateEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
-  const handleSignup = () => {
+  const handleSignup = async () => {
     let isValid = true;
 
     if (!name.trim()) {
@@ -38,6 +42,12 @@ export default function SignupScreen() {
       isValid = false;
     } else {
       setNameError("");
+    }
+    if (!number.trim()) {
+      setNumberError("Name is required");
+      isValid = false;
+    } else {
+      setNumberError("");
     }
 
     if (!email.trim()) {
@@ -71,7 +81,19 @@ export default function SignupScreen() {
     }
 
     if (isValid) {
-      navigation.navigate("/(tabs)");
+      const obj = {
+        user: {
+          business_name: name,
+          number: number,
+          email: email,
+          password: password,
+          password_confirmation: confirmPassword,
+        },
+      };
+      const res = await signup(obj);
+      if (res === "success") {
+        navigation.navigate("Salesfloor");
+      }
     }
   };
 
@@ -83,6 +105,7 @@ export default function SignupScreen() {
           behavior={Platform.OS === "ios" ? "padding" : "height"}
           className="flex-1 px-6 bg-white"
         >
+          <ErrorMessage />
           <View className="my-8">
             <Text className="text-[28px] font-extrabold text-zinc-900 mb-1">
               Create Account
@@ -97,7 +120,7 @@ export default function SignupScreen() {
             {/* Name */}
             <View>
               <Text className="text-sm font-semibold text-zinc-600 mb-2">
-                Full Name
+                Business Name
               </Text>
               <TextInput
                 className={`h-14 px-4 rounded-xl text-base bg-zinc-50 text-zinc-900 border ${
@@ -110,6 +133,23 @@ export default function SignupScreen() {
               />
               {!!nameError && (
                 <Text className="text-xs text-red-500 mt-1">{nameError}</Text>
+              )}
+            </View>
+            <View>
+              <Text className="text-sm font-semibold text-zinc-600 mb-2">
+                Number
+              </Text>
+              <TextInput
+                className={`h-14 px-4 rounded-xl text-base bg-zinc-50 text-zinc-900 border ${
+                  numberError ? "border-red-500" : "border-zinc-200"
+                }`}
+                placeholder="Enter your full name"
+                placeholderTextColor="#A1A1AA"
+                value={number}
+                onChangeText={setNumber}
+              />
+              {!!numberError && (
+                <Text className="text-xs text-red-500 mt-1">{numberError}</Text>
               )}
             </View>
 

@@ -3,6 +3,7 @@ import { X, CreditCard, Smartphone, DollarSign } from "lucide-react-native";
 import { useState } from "react";
 import MobileMoneyModal from "./MobileMoneyModal";
 import { Alert } from "react-native";
+import CashPaymentModal from "./CashPaymentModal";
 export default function PaymentModal({
   isVisible,
   onClose,
@@ -11,6 +12,7 @@ export default function PaymentModal({
   setIsVisible,
 }) {
   const [showMobileMoneyModal, setShowMobileMoneyModal] = useState(false);
+  const [showCashModal, setShowCashModal] = useState(false);
   return (
     <>
       <Modal
@@ -49,7 +51,10 @@ export default function PaymentModal({
               {/* Cash */}
               <TouchableOpacity
                 className="flex-row items-center p-4 bg-zinc-50 rounded-xl border border-zinc-200"
-                onPress={onPaymentComplete}
+                onPress={() => {
+                  setShowCashModal(true);
+                  setIsVisible(false);
+                }}
               >
                 <View
                   className="w-12 h-12 rounded-full justify-center items-center mr-4"
@@ -128,6 +133,15 @@ export default function PaymentModal({
         amount={total}
         onPaymentComplete={() => {
           setShowMobileMoneyModal(false);
+          onPaymentComplete();
+        }}
+      />
+      <CashPaymentModal
+        isVisible={showCashModal}
+        onClose={() => setShowCashModal(false)}
+        amount={total}
+        onConfirm={() => {
+          setShowCashModal(false);
           onPaymentComplete();
         }}
       />
