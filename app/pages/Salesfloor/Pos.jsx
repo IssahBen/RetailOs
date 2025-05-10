@@ -17,9 +17,9 @@ import {
   CreditCard,
 } from "lucide-react-native";
 import PaymentModal from "./PaymentModal";
-import { useAuth } from "../../../Context/AuthContext";
+import { useAuth } from "../../Context/AuthContext";
 
-import LogoutButton from "../../../ui/LogoutScreen";
+import LogoutButton from "../../ui/LogoutScreen";
 const SAMPLE_PRODUCTS = [
   { id: "1", name: "Blue T-Shirt", category: "Apparel", price: 24.99 },
   {

@@ -6,8 +6,11 @@ import LandingScreen from "../pages/Welcome/Home";
 import { useNavigation } from "@react-navigation/native";
 import { useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
-import POSScreen from "../pages/Welcome/Salesfloor/Pos";
+import POSScreen from "../pages/Salesfloor/Pos";
 import { useAuth } from "../Context/AuthContext";
+import ProductsPage from "../pages/Products/ProductsPage";
+import EditProductScreen from "../pages/Products/EditProduct";
+import AddProductScreen from "../pages/Products/AddProduct";
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 export default function Tabs() {
@@ -66,6 +69,28 @@ export default function Tabs() {
           },
         })}
       />
+      <Tab.Screen
+        name="Items"
+        component={ProductsStack}
+        options={{
+          tabBarLabel: "",
+          tabBarIcon: ({ color }) => (
+            <Ionicons name="pricetags-outline" size={24} color={color} />
+          ),
+        }}
+        listeners={({ navigation }) => ({
+          tabPress: (e) => {
+            e.preventDefault();
+            if (isLoggedIn) {
+              navigation.navigate("Items");
+            } else {
+              navigation.navigate("Main");
+              setErrorMessage("Sign Up || Sign In");
+              setVisible(true);
+            }
+          },
+        })}
+      />
     </Tab.Navigator>
   );
 }
@@ -116,6 +141,27 @@ function SalesStack() {
       <Stack.Screen
         name="Sales"
         component={POSScreen}
+        options={{ headerShown: false }}
+      />
+    </Stack.Navigator>
+  );
+}
+function ProductsStack() {
+  return (
+    <Stack.Navigator initialRouteName="Products">
+      <Stack.Screen
+        name="Products"
+        component={ProductsPage}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="add-product"
+        component={AddProductScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="edit-product"
+        component={EditProductScreen}
         options={{ headerShown: false }}
       />
     </Stack.Navigator>
