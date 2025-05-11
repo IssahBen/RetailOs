@@ -10,24 +10,28 @@ import {
 
 import { X, Camera, Upload, Trash2 } from "lucide-react-native";
 import { useNavigation } from "@react-navigation/native";
+
 export default function EditProductScreen() {
   const navigation = useNavigation();
 
   const [formData, setFormData] = useState({
     name: "Blue T-Shirt",
     price: "24.99",
+    cost: "14.99",
     category: "Apparel",
     quantity: "45",
     description: "Comfortable cotton t-shirt in classic blue.",
     image:
       "https://images.pexels.com/photos/1884581/pexels-photo-1884581.jpeg?auto=compress&cs=tinysrgb&w=800",
   });
+
   const [errors, setErrors] = useState({});
 
   const validateForm = () => {
     const newErrors = {};
     if (!formData.name) newErrors.name = "Product name is required";
     if (!formData.price) newErrors.price = "Price is required";
+    if (!formData.cost) newErrors.cost = "Cost is required";
     if (!formData.category) newErrors.category = "Category is required";
     if (!formData.quantity) newErrors.quantity = "Quantity is required";
 
@@ -106,9 +110,9 @@ export default function EditProductScreen() {
             )}
           </View>
 
-          {/* Price & Quantity */}
-          <View className="flex-row">
-            <View className="flex-1 mr-2 mb-5">
+          {/* Price, Cost & Quantity */}
+          <View className="flex-row space-x-3">
+            <View className="flex-1 mb-5">
               <Text className="text-sm font-semibold text-zinc-600 mb-2">
                 Price
               </Text>
@@ -131,7 +135,28 @@ export default function EditProductScreen() {
               )}
             </View>
 
-            <View className="flex-1 ml-2 mb-5">
+            <View className="flex-1 mb-5">
+              <Text className="text-sm font-semibold text-zinc-600 mb-2">
+                Cost
+              </Text>
+              <TextInput
+                className={`h-12 bg-gray-50 border rounded-lg px-4 text-base text-zinc-900 ${
+                  errors.cost ? "border-red-500" : "border-gray-200"
+                }`}
+                placeholder="0.00"
+                keyboardType="decimal-pad"
+                value={formData.cost}
+                onChangeText={(text) => {
+                  setFormData({ ...formData, cost: text });
+                  if (errors.cost) setErrors({ ...errors, cost: null });
+                }}
+              />
+              {errors.cost && (
+                <Text className="text-xs text-red-500 mt-1">{errors.cost}</Text>
+              )}
+            </View>
+
+            <View className="flex-1 mb-5">
               <Text className="text-sm font-semibold text-zinc-600 mb-2">
                 Quantity
               </Text>

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Text,
   View,
@@ -6,27 +6,39 @@ import {
   TouchableOpacity,
   ScrollView,
   Image,
+  Alert,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import { X, Camera, Upload } from "lucide-react-native";
+import { X, Camera, Upload, Files } from "lucide-react-native";
+import {
+  pickImageFromLibrary,
+  takePhotoWithCamera,
+} from "../../Shared/imageUtils";
 
 export default function AddProductScreen() {
   const navigation = useNavigation();
   const [formData, setFormData] = useState({
     name: "",
     price: "",
+    cost: "",
+    reorderLevel: "",
     category: "",
     quantity: "",
     description: "",
     image:
       "https://images.pexels.com/photos/4464821/pexels-photo-4464821.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
   });
+
   const [errors, setErrors] = useState({});
+  const [imageUri, setImageUri] = useState(null);
 
   const validateForm = () => {
     const newErrors = {};
     if (!formData.name) newErrors.name = "Product name is required";
     if (!formData.price) newErrors.price = "Price is required";
+    if (!formData.cost) newErrors.cost = "Cost is required";
+    if (!formData.reorderLevel)
+      newErrors.reorderLevel = "Reorder level is required";
     if (!formData.category) newErrors.category = "Category is required";
     if (!formData.quantity) newErrors.quantity = "Quantity is required";
 
@@ -37,6 +49,22 @@ export default function AddProductScreen() {
   const handleSubmit = () => {
     if (validateForm()) {
       navigation.goBack();
+    }
+  };
+
+  const handlePickImage = async () => {
+    const image = await pickImageFromLibrary();
+    if (image) {
+      setImageUri(image);
+      setFormData({ ...formData, image: image });
+    }
+  };
+
+  const handleTakePhoto = async () => {
+    const image = await takePhotoWithCamera();
+    if (image) {
+      setImageUri(image);
+      setFormData({ ...formData, image: image });
     }
   };
 
@@ -60,18 +88,24 @@ export default function AddProductScreen() {
         {/* Image Section */}
         <View className="px-6 py-6 items-center">
           <Image
-            source={{ uri: formData.image }}
+            source={{ uri: imageUri || formData.image }}
             className="w-full h-52 rounded-xl mb-4 bg-zinc-100"
             resizeMode="cover"
           />
           <View className="flex-row space-x-3">
-            <TouchableOpacity className="flex-row items-center bg-blue-500 px-4 py-2 rounded-lg space-x-2">
+            <TouchableOpacity
+              className="flex-row items-center bg-blue-500 px-4 py-2 rounded-lg space-x-2"
+              onPress={handleTakePhoto}
+            >
               <Camera size={20} color="#FFFFFF" />
               <Text className="text-white font-semibold text-sm">
                 Take Photo
               </Text>
             </TouchableOpacity>
-            <TouchableOpacity className="flex-row items-center bg-blue-500 px-4 py-2 rounded-lg space-x-2">
+            <TouchableOpacity
+              className="flex-row items-center bg-blue-500 px-4 py-2 rounded-lg space-x-2"
+              onPress={handlePickImage}
+            >
               <Upload size={20} color="#FFFFFF" />
               <Text className="text-white font-semibold text-sm">
                 Upload Image
@@ -103,7 +137,7 @@ export default function AddProductScreen() {
             )}
           </View>
 
-          {/* Price & Quantity */}
+          {/* Price and Cost */}
           <View className="flex-row space-x-2">
             <View className="flex-1 mb-5">
               <Text className="text-sm font-semibold text-zinc-600 mb-2">
@@ -130,6 +164,30 @@ export default function AddProductScreen() {
 
             <View className="flex-1 mb-5">
               <Text className="text-sm font-semibold text-zinc-600 mb-2">
+                Cost
+              </Text>
+              <TextInput
+                className={`h-12 px-4 rounded-lg border ${
+                  errors.cost ? "border-red-500" : "border-zinc-200"
+                } bg-zinc-50 text-base text-zinc-900`}
+                placeholder="0.00"
+                keyboardType="decimal-pad"
+                value={formData.cost}
+                onChangeText={(text) => {
+                  setFormData({ ...formData, cost: text });
+                  if (errors.cost) setErrors({ ...errors, cost: null });
+                }}
+              />
+              {errors.cost && (
+                <Text className="text-xs text-red-500 mt-1">{errors.cost}</Text>
+              )}
+            </View>
+          </View>
+
+          {/* Quantity and Reorder Level */}
+          <View className="flex-row space-x-2">
+            <View className="flex-1 mb-5">
+              <Text className="text-sm font-semibold text-zinc-600 mb-2">
                 Quantity
               </Text>
               <TextInput
@@ -147,6 +205,30 @@ export default function AddProductScreen() {
               {errors.quantity && (
                 <Text className="text-xs text-red-500 mt-1">
                   {errors.quantity}
+                </Text>
+              )}
+            </View>
+
+            <View className="flex-1 mb-5">
+              <Text className="text-sm font-semibold text-zinc-600 mb-2">
+                Reorder Level
+              </Text>
+              <TextInput
+                className={`h-12 px-4 rounded-lg border ${
+                  errors.reorderLevel ? "border-red-500" : "border-zinc-200"
+                } bg-zinc-50 text-base text-zinc-900`}
+                placeholder="0"
+                keyboardType="number-pad"
+                value={formData.reorderLevel}
+                onChangeText={(text) => {
+                  setFormData({ ...formData, reorderLevel: text });
+                  if (errors.reorderLevel)
+                    setErrors({ ...errors, reorderLevel: null });
+                }}
+              />
+              {errors.reorderLevel && (
+                <Text className="text-xs text-red-500 mt-1">
+                  {errors.reorderLevel}
                 </Text>
               )}
             </View>
