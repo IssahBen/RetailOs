@@ -18,39 +18,19 @@ import {
 } from "lucide-react-native";
 import PaymentModal from "./PaymentModal";
 import { useAuth } from "../../Context/AuthContext";
-
+import Loader from "../../ui/Loader";
 import LogoutButton from "../../ui/LogoutScreen";
 import { useProduct } from "../../Context/ProductsContext";
-const SAMPLE_PRODUCTS = [
-  { id: "1", name: "Blue T-Shirt", category: "Apparel", price: 24.99 },
-  {
-    id: "2",
-    name: "Wireless Headphones",
-    category: "Electronics",
-    price: 129.99,
-  },
-  { id: "3", name: "Coffee Mug", category: "Home Goods", price: 14.5 },
-  { id: "4", name: "Leather Wallet", category: "Accessories", price: 49.99 },
-  { id: "5", name: "Smartphone Case", category: "Electronics", price: 19.99 },
-  { id: "6", name: "Water Bottle", category: "Home Goods", price: 22.5 },
-];
-
-const CATEGORIES = [
-  "All",
-  "Apparel",
-  "Electronics",
-  "Home Goods",
-  "Accessories",
-  "Office",
-];
 
 export default function POSScreen() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [cart, setCart] = useState([]);
-  const [products, setProducts] = useState(SAMPLE_PRODUCTS);
+  const [products, setProducts] = useState([]);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const { user } = useAuth();
+  const Options = [...new Set(products.map((item) => item.category))];
+  const [isLoading, setIsLoading] = useState(false);
   async function GetProducts() {
     try {
       const res = await fetch(
@@ -75,7 +55,9 @@ export default function POSScreen() {
   }
 
   useEffect(() => {
+    setIsLoading(true);
     GetProducts();
+    setIsLoading(false);
   }, []);
 
   const filteredProducts = products.filter((item) => {
@@ -123,13 +105,15 @@ export default function POSScreen() {
     cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const getTax = () => getSubtotal() * 0.08;
   const getTotal = () => getSubtotal() + getTax();
-
+  if (isLoading) {
+    return <Loader />;
+  }
   return (
     <View className="flex-1 flex-row bg-[#F8FAFC]">
       {/* Product Section */}
       <View className="flex-[3] border-r border-zinc-200">
         <View className="px-6 pt-16 pb-5 bg-white flex-row justify-between shadow-sm relative">
-          <Text className="text-3xl font-extrabold text-zinc-900 tracking-tight ">
+          <Text className="text-3xl font-extrabold text-rose-600 tracking-tight ">
             {user?.business_name}
           </Text>
           {/* Position LogoutButton at the top-right */}
@@ -153,10 +137,10 @@ export default function POSScreen() {
           contentContainerStyle={{ paddingHorizontal: 16 }}
           className="py-3 bg-white"
         >
-          {CATEGORIES.map((category) => (
+          {Options.map((category) => (
             <TouchableOpacity
               key={category}
-              className={`px-5 py-1 mx-2 h-16 rounded-full transition-all duration-200 ease-in-out shadow-sm ${
+              className={`px-5 py-1 mx-2 h-10 rounded-full transition-all duration-200 ease-in-out shadow-sm ${
                 selectedCategory === category ? "bg-blue-600" : "bg-zinc-200"
               }`}
               onPress={() => setSelectedCategory(category)}
@@ -179,7 +163,7 @@ export default function POSScreen() {
               className="flex-1 m-2 py-2 bg-white rounded-2xl items-center shadow-md"
               onPress={() => addToCart(item)}
             >
-              <View className="w-16 h-16 rounded-xl bg-blue-100 justify-center items-center mb-3">
+              <View className="w-16 h-16 rounded-xl bg-rose-100 justify-center items-center mb-3">
                 <Package size={24} color="#2563EB" />
               </View>
               <Text className="text-sm font-semibold text-center text-zinc-900 mb-1">
@@ -286,7 +270,7 @@ export default function POSScreen() {
           <TouchableOpacity
             disabled={cart.length === 0}
             className={`h-14 rounded-xl flex-row justify-center items-center transition ${
-              cart.length === 0 ? "bg-blue-300" : "bg-blue-600"
+              cart.length === 0 ? "bg-rose-300" : "bg-rose-600"
             }`}
             onPress={() => setShowPaymentModal(true)}
           >

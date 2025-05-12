@@ -11,8 +11,16 @@ import { useAuth } from "../Context/AuthContext";
 import ProductsPage from "../pages/Products/ProductsPage";
 import EditProductScreen from "../pages/Products/EditProduct";
 import AddProductScreen from "../pages/Products/AddProduct";
+import { createDrawerNavigator } from "@react-navigation/drawer";
+import ReportsScreen from "../pages/reports/ReportsScreen";
+import SalesReportScreen from "../pages/reports/SalesReportScreen";
+import StockReportScreen from "../pages/reports/StockReportScreen";
+import TransactionReportScreen from "../pages/reports/TransactionReportScreen";
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
+
+const Drawer = createDrawerNavigator();
+
 export default function Tabs() {
   const { isLoggedIn, setVisible, setErrorMessage } = useAuth(false);
   // eslint-disable-next-line no-unused-vars
@@ -83,6 +91,28 @@ export default function Tabs() {
             e.preventDefault();
             if (isLoggedIn) {
               navigation.navigate("Items");
+            } else {
+              navigation.navigate("Main");
+              setErrorMessage("Sign Up || Sign In");
+              setVisible(true);
+            }
+          },
+        })}
+      />
+      <Tab.Screen
+        name="reports"
+        component={DrawerStack}
+        options={{
+          tabBarLabel: "",
+          tabBarIcon: ({ color }) => (
+            <Ionicons name="bar-chart" size={24} color={color} />
+          ),
+        }}
+        listeners={({ navigation }) => ({
+          tabPress: (e) => {
+            e.preventDefault();
+            if (isLoggedIn) {
+              navigation.navigate("reports");
             } else {
               navigation.navigate("Main");
               setErrorMessage("Sign Up || Sign In");
@@ -165,5 +195,15 @@ function ProductsStack() {
         options={{ headerShown: false }}
       />
     </Stack.Navigator>
+  );
+}
+
+function DrawerStack() {
+  return (
+    <Drawer.Navigator initialRouteName="sales">
+      <Drawer.Screen name="Sales" component={SalesReportScreen} />
+      <Drawer.Screen name="Stock" component={StockReportScreen} />
+      <Drawer.Screen name="Transactions" component={TransactionReportScreen} />
+    </Drawer.Navigator>
   );
 }

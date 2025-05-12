@@ -36,6 +36,34 @@ export default function ProductsPovider({ children }) {
       return "failed";
     }
   }
+  async function updateProduct(obj, id) {
+    try {
+      const res = await fetch(
+        `https://3006-99-230-98-234.ngrok-free.app/api/v1/products/${id}`,
+        {
+          method: "POST",
+          headers: {
+            "X-User-Token": token,
+            "X-User-Email": email,
+          },
+          body: obj,
+        }
+      );
+      const data = await res.json();
+      if (res.ok) {
+        return "success";
+      } else {
+        const error = data.error || "Product creation failed";
+        setErrorMessage(error);
+        setVisible(true);
+        return "failed";
+      }
+    } catch (error) {
+      setErrorMessage("Server Offline");
+      setVisible(true);
+      return "failed";
+    }
+  }
   async function GetProducts() {
     try {
       const res = await fetch(
@@ -93,6 +121,7 @@ export default function ProductsPovider({ children }) {
         GetProduct,
         product,
         setProduct,
+        updateProduct,
       }}
     >
       {children}

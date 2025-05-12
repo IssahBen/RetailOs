@@ -67,11 +67,11 @@ export default function AddProductScreen() {
       addProduct(productData).then((val) => {
         if (val === "success") {
           Alert.alert("Success", "Product added successfully");
+          navigation.navigate("Products");
         } else {
           Alert.alert("Error", "Failed to add product");
         }
       });
-      navigation.goBack();
     }
   };
 

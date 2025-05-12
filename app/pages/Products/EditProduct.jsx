@@ -13,8 +13,10 @@ import { X, Camera, Upload, Trash2 } from "lucide-react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useRoute } from "@react-navigation/native";
 import image from "../../../assets/default.jpg";
+import { Alert } from "react-native";
 export default function EditProductScreen() {
   const navigation = useNavigation();
+  const { updateProduct } = useProduct(); // Get the product and setProduct function from context
   const [product, setProduct] = useState({});
   const route = useRoute();
   const { id } = route.params; // Get the product ID from the route params
@@ -42,11 +44,12 @@ export default function EditProductScreen() {
   }
   useEffect(() => {
     GetProduct(id);
-  }, [id]);
+  }, []);
 
   useEffect(() => {
     if (product && product.name) {
       setFormData({
+        id: id,
         name: product.name,
         price: product.price?.toString(),
         cost: product.cost?.toString(),
@@ -75,7 +78,24 @@ export default function EditProductScreen() {
 
   const handleSubmit = () => {
     if (validateForm()) {
-      navigation.goBack();
+      const productData = new FormData();
+      productData.append("name", formData.name);
+      productData.append("price", formData.price);
+      productData.append("cost", formData.cost);
+      productData.append("reorder_level", formData.reorderLevel);
+      productData.append("category", formData.category);
+      productData.append("quantity", formData.quantity);
+      productData.append("description", formData.description);
+      productData.append("image_url", formData.image);
+
+      updateProduct(productData, id).then((val) => {
+        if (val === "success") {
+          Alert.alert("Success", "Product added successfully");
+          navigation.navigate("Products");
+        } else {
+          Alert.alert("Error", "Failed to add product");
+        }
+      });
     }
   };
 

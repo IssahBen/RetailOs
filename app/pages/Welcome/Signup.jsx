@@ -14,7 +14,7 @@ import { Eye, EyeOff, Check } from "lucide-react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useAuth } from "../../Context/AuthContext";
 import ErrorMessage from "../../messages/ErrorMessage";
-
+import Loader from "../../ui/Loader";
 export default function SignupScreen() {
   const navigation = useNavigation();
 
@@ -31,6 +31,7 @@ export default function SignupScreen() {
   const [confirmPasswordError, setConfirmPasswordError] = useState("");
   const [number, setNumber] = useState("");
   const [numberError, setNumberError] = useState();
+  const [isLoading, setIsLoading] = useState(false);
   const { signup } = useAuth();
   const validateEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
@@ -90,13 +91,17 @@ export default function SignupScreen() {
           password_confirmation: confirmPassword,
         },
       };
+      setIsLoading(true);
       const res = await signup(obj);
       if (res === "success") {
+        setIsLoading(false);
         navigation.navigate("Salesfloor");
       }
     }
   };
-
+  if (isLoading) {
+    return <Loader />;
+  }
   return (
     <SafeAreaView className="flex-1 bg-white">
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>

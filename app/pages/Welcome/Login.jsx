@@ -16,13 +16,14 @@ import { Eye, EyeOff } from "lucide-react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useAuth } from "../../Context/AuthContext";
 import ErrorMessage from "../../messages/ErrorMessage";
-
+import Loader from "../../ui/Loader";
 export default function LoginScreen() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const navigation = useNavigation();
   const { login } = useAuth();
   const validateEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -52,13 +53,18 @@ export default function LoginScreen() {
 
     if (isValid) {
       const obj = { user: { email: email, password: password } };
+      setIsLoading(true);
       const res = await login(obj);
+
       if (res === "success") {
+        setIsLoading(false);
         navigation.navigate("Salesfloor");
       }
     }
   };
-
+  if (isLoading) {
+    return <Loader />;
+  }
   return (
     <SafeAreaView className="flex-1 bg-white">
       <StatusBar style="dark" />

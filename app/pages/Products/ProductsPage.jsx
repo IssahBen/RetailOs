@@ -11,58 +11,17 @@ import {
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { useProduct } from "../../Context/ProductsContext";
 import cart from "../../../assets/default.jpg";
-const SAMPLE_PRODUCTS = [
-  {
-    id: "1",
-    name: "Blue T-Shirt",
-    category: "Apparel",
-    quantity: 45,
-    price: 24.99,
-    image:
-      "https://images.pexels.com/photos/1884581/pexels-photo-1884581.jpeg?auto=compress&cs=tinysrgb&w=800",
-  },
-  {
-    id: "2",
-    name: "Wireless Headphones",
-    category: "Electronics",
-    quantity: 12,
-    price: 129.99,
-    image:
-      "https://images.pexels.com/photos/3587478/pexels-photo-3587478.jpeg?auto=compress&cs=tinysrgb&w=800",
-  },
-  {
-    id: "3",
-    name: "Coffee Mug",
-    category: "Home Goods",
-    quantity: 32,
-    price: 14.5,
-    image:
-      "https://images.pexels.com/photos/1793035/pexels-photo-1793035.jpeg?auto=compress&cs=tinysrgb&w=800",
-  },
-  {
-    id: "4",
-    name: "Leather Wallet",
-    category: "Accessories",
-    quantity: 18,
-    price: 49.99,
-    image:
-      "https://images.pexels.com/photos/2079246/pexels-photo-2079246.jpeg?auto=compress&cs=tinysrgb&w=800",
-  },
-];
+import Loader from "../../ui/Loader";
 
-const CATEGORIES = [
-  "All",
-  "Apparel",
-  "Electronics",
-  "Home Goods",
-  "Accessories",
-];
 import { useNavigation } from "@react-navigation/native";
 export default function ProductsPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
   const { products, GetProducts } = useProduct();
   const navigation = useNavigation();
+  const [isLoading, setIsLoading] = useState(true);
+  const Options = [...new Set(products.map((item) => item.category))];
+
   const filteredProducts = products.filter((item) => {
     const matchesSearch = item.name
       .toLowerCase()
@@ -72,8 +31,12 @@ export default function ProductsPage() {
     return matchesSearch && matchesCategory;
   });
   useEffect(() => {
-    GetProducts();
+    setIsLoading(true);
+    GetProducts().then(() => {
+      setIsLoading(false);
+    });
   }, []);
+
   const renderProduct = ({ item }) => (
     <View className="bg-white rounded-2xl mb-4 shadow-sm overflow-hidden">
       <View className="relative">
@@ -126,6 +89,10 @@ export default function ProductsPage() {
       </View>
     </View>
   );
+
+  if (isLoading) {
+    return <Loader />;
+  }
   return (
     <View className="flex-1 bg-zinc-50">
       {/* Header */}
@@ -162,10 +129,10 @@ export default function ProductsPage() {
         showsHorizontalScrollIndicator={false}
         className="bg-white px-5 py-4"
       >
-        {CATEGORIES.map((category) => (
+        {Options.map((category) => (
           <TouchableOpacity
             key={category}
-            className={`px-5 py-2.5 rounded-full mx-1 ${
+            className={`px-5 py-2.5  h-12 rounded-full mx-1 ${
               selectedCategory === category ? "bg-blue-600" : "bg-zinc-100"
             }`}
             onPress={() => setSelectedCategory(category)}
