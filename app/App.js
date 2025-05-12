@@ -4,12 +4,15 @@ import "../global.css";
 import { NavigationContainer } from "@react-navigation/native";
 import Tabs from "./Shared/Navigation";
 import { AuthProvider } from "./Context/AuthContext";
+import ProductsPovider from "./Context/ProductsContext";
 export default function App() {
   return (
     <AuthProvider>
-      <NavigationContainer>
-        <Tabs />
-      </NavigationContainer>
+      <ProductsPovider>
+        <NavigationContainer>
+          <Tabs />
+        </NavigationContainer>
+      </ProductsPovider>
     </AuthProvider>
   );
 }
