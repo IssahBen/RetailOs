@@ -15,7 +15,16 @@ export async function pickImageFromLibrary() {
     quality: 1,
   });
 
-  return !result.canceled ? result.assets[0].uri : null;
+  if (!result.canceled) {
+    const asset = result.assets[0];
+    return {
+      uri: asset.uri,
+      name: asset.fileName || asset.uri.split("/").pop(),
+      type: asset.type || "image/jpeg", // default to jpeg
+    };
+  }
+
+  return null;
 }
 
 export async function takePhotoWithCamera() {
@@ -30,7 +39,16 @@ export async function takePhotoWithCamera() {
     quality: 1,
   });
 
-  return !result.canceled ? result.assets[0].uri : null;
+  if (!result.canceled) {
+    const asset = result.assets[0];
+    return {
+      uri: asset.uri,
+      name: asset.fileName || asset.uri.split("/").pop(),
+      type: asset.type || "image/jpeg", // default to jpeg
+    };
+  }
+
+  return null;
 }
 
 //  const saveImageToFileSystem = async (uri) => {

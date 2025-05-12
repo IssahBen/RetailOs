@@ -130,6 +130,8 @@ export function AuthProvider({ children }) {
         token,
         isLoggedIn,
         setErrorMessage,
+        email,
+        token,
       }}
     >
       {children}

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Text,
   View,
@@ -20,6 +20,7 @@ import PaymentModal from "./PaymentModal";
 import { useAuth } from "../../Context/AuthContext";
 
 import LogoutButton from "../../ui/LogoutScreen";
+import { useProduct } from "../../Context/ProductsContext";
 const SAMPLE_PRODUCTS = [
   { id: "1", name: "Blue T-Shirt", category: "Apparel", price: 24.99 },
   {
@@ -47,9 +48,36 @@ export default function POSScreen() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [cart, setCart] = useState([]);
-  const [products] = useState(SAMPLE_PRODUCTS);
+  const [products, setProducts] = useState(SAMPLE_PRODUCTS);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const { user } = useAuth();
+  async function GetProducts() {
+    try {
+      const res = await fetch(
+        "https://3006-99-230-98-234.ngrok-free.app/api/v1/products",
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      const data = await res.json();
+
+      // Set the fetched data to state
+
+      setProducts(data);
+      return "success";
+    } catch (error) {
+      Alert.alert("Error", "Failed to fetch data from the server.");
+    }
+  }
+
+  useEffect(() => {
+    GetProducts();
+  }, []);
+
   const filteredProducts = products.filter((item) => {
     const matchesSearch = item.name
       .toLowerCase()
@@ -128,7 +156,7 @@ export default function POSScreen() {
           {CATEGORIES.map((category) => (
             <TouchableOpacity
               key={category}
-              className={`px-5 py-2 mx-2 rounded-full transition-all duration-200 ease-in-out shadow-sm ${
+              className={`px-5 py-1 mx-2 h-16 rounded-full transition-all duration-200 ease-in-out shadow-sm ${
                 selectedCategory === category ? "bg-blue-600" : "bg-zinc-200"
               }`}
               onPress={() => setSelectedCategory(category)}
@@ -148,7 +176,7 @@ export default function POSScreen() {
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
             <TouchableOpacity
-              className="flex-1 m-2 p-5 bg-white rounded-2xl items-center shadow-md"
+              className="flex-1 m-2 py-2 bg-white rounded-2xl items-center shadow-md"
               onPress={() => addToCart(item)}
             >
               <View className="w-16 h-16 rounded-xl bg-blue-100 justify-center items-center mb-3">

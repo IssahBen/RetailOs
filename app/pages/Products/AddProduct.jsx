@@ -14,9 +14,13 @@ import {
   pickImageFromLibrary,
   takePhotoWithCamera,
 } from "../../Shared/imageUtils";
+import { useProduct } from "../../Context/ProductsContext";
 
+import image from "../../../assets/default.jpg";
 export default function AddProductScreen() {
   const navigation = useNavigation();
+  const { addProduct } = useProduct();
+  const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     price: "",
@@ -41,6 +45,7 @@ export default function AddProductScreen() {
       newErrors.reorderLevel = "Reorder level is required";
     if (!formData.category) newErrors.category = "Category is required";
     if (!formData.quantity) newErrors.quantity = "Quantity is required";
+    if (!formData.image) newErrors.image = "Image is required";
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -48,6 +53,24 @@ export default function AddProductScreen() {
 
   const handleSubmit = () => {
     if (validateForm()) {
+      setIsLoading(true);
+      const productData = new FormData();
+      productData.append("name", formData.name);
+      productData.append("price", formData.price);
+      productData.append("cost", formData.cost);
+      productData.append("reorder_level", formData.reorderLevel);
+      productData.append("category", formData.category);
+      productData.append("quantity", formData.quantity);
+      productData.append("description", formData.description);
+      productData.append("image_url", formData.image);
+
+      addProduct(productData).then((val) => {
+        if (val === "success") {
+          Alert.alert("Success", "Product added successfully");
+        } else {
+          Alert.alert("Error", "Failed to add product");
+        }
+      });
       navigation.goBack();
     }
   };
@@ -55,7 +78,7 @@ export default function AddProductScreen() {
   const handlePickImage = async () => {
     const image = await pickImageFromLibrary();
     if (image) {
-      setImageUri(image);
+      setImageUri(image.uri);
       setFormData({ ...formData, image: image });
     }
   };
@@ -63,7 +86,7 @@ export default function AddProductScreen() {
   const handleTakePhoto = async () => {
     const image = await takePhotoWithCamera();
     if (image) {
-      setImageUri(image);
+      setImageUri(image.uri);
       setFormData({ ...formData, image: image });
     }
   };
@@ -88,11 +111,11 @@ export default function AddProductScreen() {
         {/* Image Section */}
         <View className="px-6 py-6 items-center">
           <Image
-            source={{ uri: imageUri || formData.image }}
+            source={image}
             className="w-full h-52 rounded-xl mb-4 bg-zinc-100"
             resizeMode="cover"
           />
-          <View className="flex-row space-x-3">
+          {/* {<View className="flex-row space-x-3">
             <TouchableOpacity
               className="flex-row items-center bg-blue-500 px-4 py-2 rounded-lg space-x-2"
               onPress={handleTakePhoto}
@@ -111,7 +134,7 @@ export default function AddProductScreen() {
                 Upload Image
               </Text>
             </TouchableOpacity>
-          </View>
+          </View>} */}
         </View>
 
         {/* Form */}

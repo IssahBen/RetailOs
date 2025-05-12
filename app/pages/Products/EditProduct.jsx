@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { use, useState } from "react";
 import {
   Text,
   View,
@@ -7,24 +7,58 @@ import {
   ScrollView,
   Image,
 } from "react-native";
-
+import { useEffect } from "react";
+import { useProduct } from "../../Context/ProductsContext";
 import { X, Camera, Upload, Trash2 } from "lucide-react-native";
 import { useNavigation } from "@react-navigation/native";
-
+import { useRoute } from "@react-navigation/native";
+import image from "../../../assets/default.jpg";
 export default function EditProductScreen() {
   const navigation = useNavigation();
+  const [product, setProduct] = useState({});
+  const route = useRoute();
+  const { id } = route.params; // Get the product ID from the route params
+  async function GetProduct(id) {
+    try {
+      const res = await fetch(
+        `https://3006-99-230-98-234.ngrok-free.app/api/v1/products/${id}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
-  const [formData, setFormData] = useState({
-    name: "Blue T-Shirt",
-    price: "24.99",
-    cost: "14.99",
-    category: "Apparel",
-    quantity: "45",
-    description: "Comfortable cotton t-shirt in classic blue.",
-    image:
-      "https://images.pexels.com/photos/1884581/pexels-photo-1884581.jpeg?auto=compress&cs=tinysrgb&w=800",
-  });
+      const data = await res.json();
 
+      // Set the fetched data to state
+
+      setProduct(data);
+      return "success";
+    } catch (error) {
+      Alert.alert("Error", "Failed to fetch data from the server.");
+    }
+  }
+  useEffect(() => {
+    GetProduct(id);
+  }, [id]);
+
+  useEffect(() => {
+    if (product && product.name) {
+      setFormData({
+        name: product.name,
+        price: product.price?.toString(),
+        cost: product.cost?.toString(),
+        category: product.category,
+        quantity: product.quantity?.toString(),
+        description: product.description,
+        image:
+          "https://images.pexels.com/photos/1884581/pexels-photo-1884581.jpeg?auto=compress&cs=tinysrgb&w=800",
+      });
+    }
+  }, [product]);
+  const [formData, setFormData] = useState({});
   const [errors, setErrors] = useState({});
 
   const validateForm = () => {
@@ -68,7 +102,7 @@ export default function EditProductScreen() {
         {/* Image Section */}
         <View className="p-6 items-center">
           <Image
-            source={{ uri: formData.image }}
+            source={image}
             className="w-full h-52 rounded-xl mb-4 bg-gray-100"
           />
           <View className="flex-row space-x-3">

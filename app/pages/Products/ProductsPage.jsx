@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Text,
   View,
@@ -9,7 +9,8 @@ import {
   Image,
 } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
-
+import { useProduct } from "../../Context/ProductsContext";
+import cart from "../../../assets/default.jpg";
 const SAMPLE_PRODUCTS = [
   {
     id: "1",
@@ -60,8 +61,9 @@ import { useNavigation } from "@react-navigation/native";
 export default function ProductsPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
+  const { products, GetProducts } = useProduct();
   const navigation = useNavigation();
-  const filteredProducts = SAMPLE_PRODUCTS.filter((item) => {
+  const filteredProducts = products.filter((item) => {
     const matchesSearch = item.name
       .toLowerCase()
       .includes(searchQuery.toLowerCase());
@@ -69,19 +71,21 @@ export default function ProductsPage() {
       selectedCategory === "All" || item.category === selectedCategory;
     return matchesSearch && matchesCategory;
   });
-
+  useEffect(() => {
+    GetProducts();
+  }, []);
   const renderProduct = ({ item }) => (
     <View className="bg-white rounded-2xl mb-4 shadow-sm overflow-hidden">
       <View className="relative">
         <Image
-          source={{ uri: item.image }}
+          source={cart}
           className="w-full h-52 bg-zinc-100"
           resizeMode="cover"
         />
         <View className="absolute top-2 right-2 flex-row space-x-2">
           <TouchableOpacity
             className="w-9 h-9 bg-white/90 rounded-full items-center justify-center shadow"
-            onPress={() => navigation.navigate("edit-product")}
+            onPress={() => navigation.navigate("edit-product", { id: item.id })}
           >
             <Ionicons name="pencil" size={18} color="#3B82F6" />
           </TouchableOpacity>
