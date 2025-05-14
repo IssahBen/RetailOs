@@ -200,7 +200,7 @@ function ProductsStack() {
 
 function DrawerStack() {
   return (
-    <Drawer.Navigator initialRouteName="sales">
+    <Drawer.Navigator initialRouteName="Sales">
       <Drawer.Screen name="Sales" component={SalesReportScreen} />
       <Drawer.Screen name="Stock" component={StockReportScreen} />
       <Drawer.Screen name="Transactions" component={TransactionReportScreen} />

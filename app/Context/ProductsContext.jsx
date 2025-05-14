@@ -108,6 +108,33 @@ export default function ProductsPovider({ children }) {
       Alert.alert("Error", "Failed to fetch data from the server.");
     }
   }
+  async function buy(obj) {
+    try {
+      const res = await fetch(
+        "https://3006-99-230-98-234.ngrok-free.app/api/v1/buy",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(obj),
+        }
+      );
+
+      const data = await res.json();
+
+      if (data.message) {
+        return "success";
+      } else {
+        const error = data.errors || "Login failed";
+        setErrorMessage(error);
+        setVisible(true);
+        return "failed";
+      }
+    } catch (error) {
+      setErrorMessage("Server Offline");
+      setVisible(true);
+      return "failed";
+    }
+  }
   return (
     <ProductContext.Provider
       value={{
@@ -122,6 +149,7 @@ export default function ProductsPovider({ children }) {
         product,
         setProduct,
         updateProduct,
+        buy,
       }}
     >
       {children}

@@ -23,9 +23,9 @@ export default function SalesReportScreen() {
       color: "#3B82F6",
     },
     {
-      title: "Refunds",
-      value: "$245.12",
-      change: "-2.4%",
+      title: "Total Orders",
+      value: "145",
+      change: "-5.2%",
       trend: "down",
       color: "#EF4444",
     },

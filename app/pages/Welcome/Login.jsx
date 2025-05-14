@@ -59,6 +59,8 @@ export default function LoginScreen() {
       if (res === "success") {
         setIsLoading(false);
         navigation.navigate("Salesfloor");
+      } else {
+        setIsLoading(false);
       }
     }
   };

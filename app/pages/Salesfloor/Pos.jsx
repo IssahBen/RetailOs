@@ -21,7 +21,9 @@ import { useAuth } from "../../Context/AuthContext";
 import Loader from "../../ui/Loader";
 import LogoutButton from "../../ui/LogoutScreen";
 import { useProduct } from "../../Context/ProductsContext";
-
+import { useRef } from "react";
+import SuccessMessage from "../../messages/SuccessMessage";
+import ErrorMessage from "../../messages/ErrorMessage";
 export default function POSScreen() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
@@ -31,6 +33,9 @@ export default function POSScreen() {
   const { user } = useAuth();
   const Options = [...new Set(products.map((item) => item.category))];
   const [isLoading, setIsLoading] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
+  const { buy } = useProduct();
   async function GetProducts() {
     try {
       const res = await fetch(
@@ -97,8 +102,19 @@ export default function POSScreen() {
     );
   };
   const handlePaymentComplete = () => {
-    setShowPaymentModal(false);
-    setCart([]);
+    const obj = { transaction: cart };
+    buy(obj)
+      .then((res) => {
+        if (res === "success") {
+          setShowPaymentModal(false);
+          setCart([]);
+          setSuccessMessage("Payment successful!");
+          setIsVisible(true);
+        }
+      })
+      .catch((error) => {
+        console.error("Payment error:", error);
+      });
     // Additional logic for handling successful payment
   };
   const getSubtotal = () =>
@@ -111,7 +127,15 @@ export default function POSScreen() {
   return (
     <View className="flex-1 flex-row bg-[#F8FAFC]">
       {/* Product Section */}
-      <View className="flex-[3] border-r border-zinc-200">
+      <View className="flex-[3] border-r border-zinc-200 relative">
+        <View className="absolute top-6 left-4 right-4 z-50">
+          <SuccessMessage
+            visible={isVisible}
+            setVisible={setIsVisible}
+            successMessage={successMessage}
+          />
+          <ErrorMessage />
+        </View>
         <View className="px-6 pt-16 pb-5 bg-white flex-row justify-between shadow-sm relative">
           <Text className="text-3xl font-extrabold text-rose-600 tracking-tight ">
             {user?.business_name}
