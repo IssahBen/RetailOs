@@ -15,6 +15,7 @@ import {
   Minus,
   ShoppingCart,
   CreditCard,
+  Store,
 } from "lucide-react-native";
 import PaymentModal from "./PaymentModal";
 import { useAuth } from "../../Context/AuthContext";
@@ -187,8 +188,8 @@ export default function POSScreen() {
               className="flex-1 m-2 py-2 bg-white rounded-2xl items-center shadow-md"
               onPress={() => addToCart(item)}
             >
-              <View className="w-16 h-16 rounded-xl bg-rose-100 justify-center items-center mb-3">
-                <Package size={24} color="#2563EB" />
+              <View className="w-16 h-16 rounded-xl bg-slate-200 justify-center items-center mb-3">
+                <Store size={24} color="#2563EB" />
               </View>
               <Text className="text-sm font-semibold text-center text-zinc-900 mb-1">
                 {item.name}
