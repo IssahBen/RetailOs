@@ -1,35 +1,77 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { ArrowLeft, TrendingUp, TrendingDown } from "lucide-react-native";
 import { useNavigation } from "@react-navigation/native";
 export default function SalesReportScreen() {
-  const [selectedPeriod, setSelectedPeriod] = useState("week");
+  const [selectedPeriod, setSelectedPeriod] = useState("All");
   const navigation = useNavigation();
-  const periods = ["day", "week", "month", "year"];
+  const [report, setReport] = useState([]);
+  const [metrics, setMetrics] = useState([]);
+  const [topProducts, setTopProducts] = useState([]);
+  const periods = ["all", "day", "week", "month"];
+  async function GetReport() {
+    try {
+      const res = await fetch(
+        "https://deep-boxer-heavily.ngrok-free.app/api/v1/reports",
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
-  const metrics = [
-    {
-      title: "Total Sales",
-      value: "$12,458.35",
-      change: "+12.5%",
-      trend: "up",
-      color: "#10B981",
-    },
-    {
-      title: "Average Order Value",
-      value: "$85.24",
-      change: "+8.3%",
-      trend: "up",
-      color: "#3B82F6",
-    },
-    {
-      title: "Total Orders",
-      value: "145",
-      change: "-5.2%",
-      trend: "down",
-      color: "#EF4444",
-    },
-  ];
+      const data = await res.json();
+
+      // Set the fetched data to state
+
+      setReport(data);
+      setMetrics(data.All);
+      setTopProducts(data.Top);
+      return "success";
+    } catch (error) {
+      Alert.alert("Error", "Failed to fetch data from the server.");
+    }
+  }
+  useEffect(() => {
+    GetReport();
+  }, []);
+
+  useEffect(() => {
+    if (selectedPeriod === "all") {
+      setMetrics(report.All);
+    } else if (selectedPeriod === "day") {
+      setMetrics(report.Day);
+    } else if (selectedPeriod === "week") {
+      setMetrics(report.Week);
+    } else if (selectedPeriod === "month") {
+      setMetrics(report.Month);
+    }
+  }, [selectedPeriod, report]);
+
+  // const metrics = [
+  //   {
+  //     title: "Total Sales",
+  //     value: "$12,458.35",
+  //     change: "+12.5%",
+  //     trend: "up",
+  //     color: "#10B981",
+  //   },
+  //   {
+  //     title: "Average Order Value",
+  //     value: "$85.24",
+  //     change: "+8.3%",
+  //     trend: "up",
+  //     color: "#3B82F6",
+  //   },
+  //   {
+  //     title: "Total Orders",
+  //     value: "145",
+  //     change: "-5.2%",
+  //     trend: "down",
+  //     color: "#EF4444",
+  //   },
+  // ];
 
   return (
     <View className="flex-1 bg-gray-50">
@@ -74,9 +116,10 @@ export default function SalesReportScreen() {
                 {metric.title}
               </Text>
               <Text className="text-2xl text-zinc-900 font-extrabold mb-2">
+                {metric.title === "Total Orders" ? "" : "$"}
                 {metric.value}
               </Text>
-              <View className="flex-row items-center">
+              {/* { <View className="flex-row items-center">
                 {metric.trend === "up" ? (
                   <TrendingUp size={16} color={metric.color} />
                 ) : (
@@ -88,21 +131,9 @@ export default function SalesReportScreen() {
                 >
                   {metric.change}
                 </Text>
-              </View>
+              </View>} */}
             </View>
           ))}
-        </View>
-
-        {/* Chart */}
-        <View className="m-4 p-4 bg-white rounded-2xl shadow shadow-black/5">
-          <Text className="text-lg font-semibold text-zinc-900 mb-4">
-            Sales Trend
-          </Text>
-          <View className="h-48 bg-gray-100 rounded-lg justify-center items-center">
-            <Text className="text-sm text-zinc-500">
-              Sales Chart Visualization
-            </Text>
-          </View>
         </View>
 
         {/* Top Products */}
@@ -110,24 +141,22 @@ export default function SalesReportScreen() {
           <Text className="text-lg font-semibold text-zinc-900 mb-4">
             Top Selling Products
           </Text>
-          {[1, 2, 3].map((item) => (
+          {topProducts.map((item) => (
             <View
-              key={item}
+              key={item.total_quantity}
               className="flex-row items-center py-3 border-b border-gray-100 last:border-b-0"
             >
-              <View className="w-8 h-8 rounded-full bg-gray-100 justify-center items-center mr-3">
-                <Text className="text-sm font-semibold text-zinc-500">
-                  {item}
-                </Text>
-              </View>
+              <View className="w-8 h-8 rounded-full bg-gray-100 justify-center items-center mr-3"></View>
               <View className="flex-1">
                 <Text className="text-base font-semibold text-zinc-900">
-                  Product {item}
+                  {item.name}
                 </Text>
-                <Text className="text-sm text-zinc-500">234 sales</Text>
+                <Text className="text-sm text-zinc-500">
+                  {item.total_quantity}
+                </Text>
               </View>
               <Text className="text-base font-semibold text-blue-500">
-                $2,345
+                ${item.total_quantity * item.price}
               </Text>
             </View>
           ))}

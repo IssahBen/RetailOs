@@ -40,7 +40,7 @@ export default function POSScreen() {
   async function GetProducts() {
     try {
       const res = await fetch(
-        "https://3006-99-230-98-234.ngrok-free.app/api/v1/products",
+        "https://deep-boxer-heavily.ngrok-free.app/api/v1/products",
         {
           method: "GET",
           headers: {

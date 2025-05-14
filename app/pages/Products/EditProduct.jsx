@@ -23,7 +23,7 @@ export default function EditProductScreen() {
   async function GetProduct(id) {
     try {
       const res = await fetch(
-        `https://3006-99-230-98-234.ngrok-free.app/api/v1/products/${id}`,
+        `https://deep-boxer-heavily.ngrok-free.app/api/v1/products/${id}`,
         {
           method: "GET",
           headers: {

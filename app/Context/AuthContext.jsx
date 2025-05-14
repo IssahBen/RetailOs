@@ -15,7 +15,7 @@ export function AuthProvider({ children }) {
   async function login(obj) {
     try {
       const res = await fetch(
-        "https://3006-99-230-98-234.ngrok-free.app/api/v1/login",
+        "https://deep-boxer-heavily.ngrok-free.app/api/v1/login",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -50,7 +50,7 @@ export function AuthProvider({ children }) {
   async function signup(obj) {
     try {
       const res = await fetch(
-        "https://3006-99-230-98-234.ngrok-free.app/api/v1/register",
+        "https://deep-boxer-heavily.ngrok-free.app/api/v1/register",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -85,7 +85,7 @@ export function AuthProvider({ children }) {
   async function logout() {
     try {
       const res = await fetch(
-        "https://3006-99-230-98-234.ngrok-free.app/api/v1/logout",
+        "https://deep-boxer-heavily.ngrok-free.app/api/v1/logout",
         {
           method: "DELETE",
           headers: {

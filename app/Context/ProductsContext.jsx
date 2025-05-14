@@ -11,7 +11,7 @@ export default function ProductsPovider({ children }) {
   async function addProduct(obj) {
     try {
       const res = await fetch(
-        "https://3006-99-230-98-234.ngrok-free.app/api/v1/products",
+        "https://deep-boxer-heavily.ngrok-free.app/api/v1/products",
         {
           method: "POST",
           headers: {
@@ -39,7 +39,7 @@ export default function ProductsPovider({ children }) {
   async function updateProduct(obj, id) {
     try {
       const res = await fetch(
-        `https://3006-99-230-98-234.ngrok-free.app/api/v1/products/${id}`,
+        `https://deep-boxer-heavily.ngrok-free.app/api/v1/products/${id}`,
         {
           method: "POST",
           headers: {
@@ -67,7 +67,7 @@ export default function ProductsPovider({ children }) {
   async function GetProducts() {
     try {
       const res = await fetch(
-        "https://3006-99-230-98-234.ngrok-free.app/api/v1/products",
+        "https://deep-boxer-heavily.ngrok-free.app/api/v1/products",
         {
           method: "GET",
           headers: {
@@ -89,7 +89,7 @@ export default function ProductsPovider({ children }) {
   async function GetProduct(id) {
     try {
       const res = await fetch(
-        `https://3006-99-230-98-234.ngrok-free.app/api/v1/products/${id}`,
+        `https://deep-boxer-heavily.ngrok-free.app/api/v1/products/${id}`,
         {
           method: "GET",
           headers: {
@@ -111,7 +111,7 @@ export default function ProductsPovider({ children }) {
   async function buy(obj) {
     try {
       const res = await fetch(
-        "https://3006-99-230-98-234.ngrok-free.app/api/v1/buy",
+        "https://deep-boxer-heavily.ngrok-free.app/api/v1/buy",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
