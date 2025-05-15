@@ -1,6 +1,11 @@
 import { useEffect, useState } from "react";
 import { ScrollView, Text, TouchableOpacity, View } from "react-native";
-import { ArrowLeft, TrendingUp, TrendingDown } from "lucide-react-native";
+import {
+  ArrowLeft,
+  TrendingUp,
+  TrendingDown,
+  RefreshCw,
+} from "lucide-react-native";
 import { useNavigation } from "@react-navigation/native";
 export default function SalesReportScreen() {
   const [selectedPeriod, setSelectedPeriod] = useState("All");
@@ -49,30 +54,6 @@ export default function SalesReportScreen() {
     }
   }, [selectedPeriod, report]);
 
-  // const metrics = [
-  //   {
-  //     title: "Total Sales",
-  //     value: "$12,458.35",
-  //     change: "+12.5%",
-  //     trend: "up",
-  //     color: "#10B981",
-  //   },
-  //   {
-  //     title: "Average Order Value",
-  //     value: "$85.24",
-  //     change: "+8.3%",
-  //     trend: "up",
-  //     color: "#3B82F6",
-  //   },
-  //   {
-  //     title: "Total Orders",
-  //     value: "145",
-  //     change: "-5.2%",
-  //     trend: "down",
-  //     color: "#EF4444",
-  //   },
-  // ];
-
   return (
     <View className="flex-1 bg-gray-50">
       {/* Header */}
@@ -80,6 +61,14 @@ export default function SalesReportScreen() {
         <Text className="text-2xl text-zinc-900 font-extrabold">
           Sales Reports
         </Text>
+        <TouchableOpacity
+          className="ml-auto p-2 rounded-full bg-gray-100"
+          onPress={() => {
+            GetReport();
+          }}
+        >
+          <RefreshCw size={24} color="#3B82F6" />
+        </TouchableOpacity>
       </View>
 
       {/* Content */}

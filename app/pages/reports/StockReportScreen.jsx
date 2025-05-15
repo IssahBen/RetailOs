@@ -6,6 +6,7 @@ import {
   TriangleAlert as AlertTriangle,
   TrendingUp,
   TrendingDown,
+  RefreshCw,
 } from "lucide-react-native";
 import { useNavigation } from "@react-navigation/native";
 export default function StockReportScreen() {
@@ -38,36 +39,20 @@ export default function StockReportScreen() {
     GetReport();
   }, []);
 
-  const metrics = [
-    {
-      title: "Total Items",
-      value: "1,245",
-      change: "+15",
-      trend: "up",
-      color: "#3B82F6",
-    },
-    {
-      title: "Low Stock Items",
-      value: "23",
-      change: "-5",
-      trend: "down",
-      color: "#F59E0B",
-    },
-    {
-      title: "Out of Stock",
-      value: "8",
-      change: "+2",
-      trend: "up",
-      color: "#EF4444",
-    },
-  ];
-
   return (
     <View className="flex-1 bg-gray-50">
       <View className="flex-row items-center px-6 pt-16 pb-5 bg-white border-b border-gray-100">
         <Text className="text-2xl text-zinc-900 font-extrabold">
           Stock Reports
         </Text>
+        <TouchableOpacity
+          className="ml-auto p-2 rounded-full bg-gray-100"
+          onPress={() => {
+            GetReport();
+          }}
+        >
+          <RefreshCw size={24} color="#3B82F6" />
+        </TouchableOpacity>
       </View>
 
       <ScrollView className="flex-1">

@@ -1,60 +1,70 @@
-import { useState } from "react";
-import { Text, View, ScrollView, TouchableOpacity } from "react-native";
-import { ArrowLeft, DollarSign, CreditCard, Wallet } from "lucide-react-native";
+import { useState, useEffect, use } from "react";
+import { Text, View, ScrollView, TouchableOpacity, Alert } from "react-native";
+import {
+  ArrowLeft,
+  DollarSign,
+  CreditCard,
+  Wallet,
+  RefreshCw,
+} from "lucide-react-native";
 import { useNavigation } from "@react-navigation/native";
+
 export default function TransactionReportScreen() {
   const navigation = useNavigation();
-  const [selectedPeriod, setSelectedPeriod] = useState("week");
+  const [selectedPeriod, setSelectedPeriod] = useState("day");
+  const [metric, setMetric] = useState([]);
+  const [transaction, setTransaction] = useState([]);
+  const [report, setReport] = useState(null);
+  const periods = ["day", "week", "month"];
+  async function GetReport() {
+    try {
+      const res = await fetch(
+        "https://deep-boxer-heavily.ngrok-free.app/api/v1/reports/transactions",
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
-  const periods = ["day", "week", "month", "year"];
+      if (!res.ok) {
+        Alert.alert("Error", "Server responded with an error.");
+        return null;
+      }
 
-  const metrics = [
-    {
-      title: "Total Transactions",
-      value: "2,458",
-      icon: DollarSign,
-      color: "#3B82F6",
-    },
-    {
-      title: "Card Payments",
-      value: "1,845",
-      icon: CreditCard,
-      color: "#10B981",
-    },
-    {
-      title: "Cash Payments",
-      value: "613",
-      icon: Wallet,
-      color: "#8B5CF6",
-    },
-  ];
+      const data = await res.json();
+      return data;
+    } catch (error) {
+      Alert.alert("Error", "Failed to fetch data from the server.");
+      return null;
+    }
+  }
 
-  const transactions = [
-    {
-      id: "1",
-      type: "sale",
-      amount: 124.99,
-      method: "Credit Card",
-      date: "2025-05-15 14:30",
-      status: "completed",
-    },
-    {
-      id: "2",
-      type: "refund",
-      amount: -45.0,
-      method: "Credit Card",
-      date: "2025-05-15 12:15",
-      status: "completed",
-    },
-    {
-      id: "3",
-      type: "sale",
-      amount: 67.5,
-      method: "Cash",
-      date: "2025-05-15 10:45",
-      status: "completed",
-    },
-  ];
+  useEffect(() => {
+    GetReport().then((res) => {
+      setReport((val) => (val = res));
+      setMetric(report.day);
+      setTransaction(res.today_transactions);
+    });
+  }, []);
+  useEffect(() => {
+    if (report) {
+      if (selectedPeriod === "day") {
+        setMetric(report.day);
+        setTransaction(report.today_transactions);
+      } else if (selectedPeriod === "week") {
+        setMetric(report.week);
+        setTransaction(report.week_transactions);
+      } else if (selectedPeriod === "month") {
+        setMetric(report.month);
+        setTransaction(report.month_transactions);
+      } else if (selectedPeriod === "year") {
+        setMetric(report.year);
+        setTransaction(report.year_transactions);
+      }
+    }
+  }, [selectedPeriod, report]);
 
   return (
     <View className="flex-1 bg-gray-50">
@@ -63,6 +73,19 @@ export default function TransactionReportScreen() {
         <Text className="text-2xl text-gray-900 font-extrabold">
           Transaction Reports
         </Text>
+        <TouchableOpacity
+          className="ml-auto p-2 rounded-full bg-gray-100"
+          onPress={() => {
+            GetReport().then((res) => {
+              setReport((val) => (val = res));
+              setMetric(report.day);
+              setTransaction(res.today_transactions);
+              setSelectedPeriod("day");
+            });
+          }}
+        >
+          <RefreshCw size={24} color="#3B82F6" />
+        </TouchableOpacity>
       </View>
 
       <ScrollView className="flex-1">
@@ -89,16 +112,16 @@ export default function TransactionReportScreen() {
 
         {/* Metrics Grid */}
         <View className="flex-row flex-wrap px-4 gap-4">
-          {metrics.map((metric, index) => (
+          {metric?.map((metric, index) => (
             <View
               key={index}
               className="flex-1 min-w-[45%] bg-white rounded-2xl p-4 shadow-sm elevation-2"
             >
               <View
                 className="w-12 h-12 rounded-full justify-center items-center mb-3"
-                style={{ backgroundColor: `${metric.color}20` }}
+                style={{ backgroundColor: `${"#3B82F6"}20` }}
               >
-                <metric.icon size={24} color={metric.color} />
+                <DollarSign size={24} color={"#3B82F6"} />
               </View>
               <Text className="text-sm text-gray-500 font-regular mb-2">
                 {metric.title}
@@ -111,21 +134,13 @@ export default function TransactionReportScreen() {
         </View>
 
         {/* Chart Section */}
-        <View className="m-4 p-4 bg-white rounded-2xl shadow-sm elevation-2">
-          <Text className="text-lg font-semibold text-gray-900 mb-4">
-            Transaction Volume
-          </Text>
-          <View className="h-52 bg-gray-100 rounded justify-center items-center">
-            <Text className="text-sm text-gray-500">Transaction Chart</Text>
-          </View>
-        </View>
 
         {/* Transactions */}
         <View className="m-4 p-4 bg-white rounded-2xl shadow-sm elevation-2">
           <Text className="text-lg font-semibold text-gray-900 mb-4">
-            Recent Transactions
+            Transactions
           </Text>
-          {transactions.map((transaction) => (
+          {transaction?.map((transaction) => (
             <View
               key={transaction.id}
               className="flex-row items-center py-3 border-b border-gray-100"
@@ -133,35 +148,27 @@ export default function TransactionReportScreen() {
               <View
                 className="w-10 h-10 rounded-full justify-center items-center mr-3"
                 style={{
-                  backgroundColor:
-                    transaction.type === "sale" ? "#10B98120" : "#EF444420",
+                  backgroundColor: "#10B98120",
                 }}
               >
-                <DollarSign
-                  size={20}
-                  color={transaction.type === "sale" ? "#10B981" : "#EF4444"}
-                />
+                <DollarSign size={20} color={"#10B981"} />
               </View>
               <View className="flex-1">
                 <View className="flex-row justify-between items-center mb-1">
                   <Text className="text-base font-semibold text-gray-900">
-                    {transaction.type === "sale" ? "Sale" : "Refund"}
+                    {transaction?.product_name}
                   </Text>
                   <Text
                     className="text-base font-semibold"
                     style={{
-                      color:
-                        transaction.type === "sale" ? "#10B981" : "#EF4444",
+                      color: "#10B981",
                     }}
                   >
-                    {transaction.type === "sale" ? "+" : ""}
-                    {transaction.amount.toFixed(2)}
+                    +{transaction.total_value.toFixed(2)}
                   </Text>
                 </View>
                 <View className="flex-row justify-between">
-                  <Text className="text-sm text-gray-500">
-                    {transaction.method}
-                  </Text>
+                  <Text className="text-sm text-gray-500">Cash</Text>
                   <Text className="text-sm text-gray-400">
                     {transaction.date}
                   </Text>

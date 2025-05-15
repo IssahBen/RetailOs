@@ -76,8 +76,14 @@ export default function PaymentModal({
               <TouchableOpacity
                 className="flex-row items-center p-4 bg-zinc-50 rounded-xl border border-zinc-200"
                 onPress={() => {
-                  setIsVisible(false);
-                  setShowMobileMoneyModal(true);
+                  // setIsVisible(false);
+                  // setShowMobileMoneyModal(true);
+                  Alert.alert("Coming soon", "", [
+                    {
+                      text: "OK",
+                      onPress: setIsVisible(false),
+                    },
+                  ]);
                 }}
               >
                 <View
