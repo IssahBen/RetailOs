@@ -60,12 +60,6 @@ export default function TransactionReportScreen() {
     <View className="flex-1 bg-gray-50">
       {/* Header */}
       <View className="flex-row items-center px-6 pt-16 pb-5 bg-white border-b border-gray-100">
-        <TouchableOpacity
-          className="w-10 h-10 rounded-full bg-gray-100 justify-center items-center mr-4"
-          onPress={() => navigation.goBack()}
-        >
-          <ArrowLeft size={24} color="#18181B" />
-        </TouchableOpacity>
         <Text className="text-2xl text-gray-900 font-extrabold">
           Transaction Reports
         </Text>

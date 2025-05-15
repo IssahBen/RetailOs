@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Text, View, ScrollView, TouchableOpacity } from "react-native";
 import {
   ArrowLeft,
@@ -10,9 +10,33 @@ import {
 import { useNavigation } from "@react-navigation/native";
 export default function StockReportScreen() {
   const navigation = useNavigation();
-  const [selectedPeriod, setSelectedPeriod] = useState("week");
+  const [metric, setMetric] = useState([]);
+  const [stock, setStock] = useState([]);
+  async function GetReport() {
+    try {
+      const res = await fetch(
+        "https://deep-boxer-heavily.ngrok-free.app/api/v1/reports/stock",
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
-  const periods = ["day", "week", "month", "year"];
+      const data = await res.json();
+
+      // Set the fetched data to state
+      setMetric(data.metrics);
+      setStock(data.current_stock);
+      return "success";
+    } catch (error) {
+      Alert.alert("Error", "Failed to fetch data from the server.");
+    }
+  }
+  useEffect(() => {
+    GetReport();
+  }, []);
 
   const metrics = [
     {
@@ -47,28 +71,8 @@ export default function StockReportScreen() {
       </View>
 
       <ScrollView className="flex-1">
-        <View className="flex-row px-4 py-4 bg-white border-b border-gray-100">
-          {periods.map((period) => (
-            <TouchableOpacity
-              key={period}
-              className={`px-4 py-2 mr-2 rounded-full ${
-                selectedPeriod === period ? "bg-blue-500" : "bg-gray-100"
-              }`}
-              onPress={() => setSelectedPeriod(period)}
-            >
-              <Text
-                className={`${
-                  selectedPeriod === period ? "text-white" : "text-gray-500"
-                } text-sm font-semibold`}
-              >
-                {period.charAt(0).toUpperCase() + period.slice(1)}
-              </Text>
-            </TouchableOpacity>
-          ))}
-        </View>
-
         <View className="flex-row flex-wrap px-4 gap-4">
-          {metrics.map((metric, index) => (
+          {metric.map((metric, index) => (
             <View
               key={index}
               className="flex-1 min-w-[45%] bg-white rounded-2xl p-4 shadow-sm"
@@ -79,71 +83,17 @@ export default function StockReportScreen() {
               <Text className="text-2xl text-zinc-900 font-extrabold mb-2">
                 {metric.value}
               </Text>
-              <View className="flex-row items-center">
-                {metric.trend === "up" ? (
-                  <TrendingUp size={16} color={metric.color} />
-                ) : (
-                  <TrendingDown size={16} color={metric.color} />
-                )}
-                <Text
-                  className="text-sm font-semibold ml-1"
-                  style={{ color: metric.color }}
-                >
-                  {metric.change}
-                </Text>
-              </View>
             </View>
           ))}
         </View>
 
         <View className="m-4 p-4 bg-white rounded-2xl shadow-sm">
           <Text className="text-lg text-zinc-900 font-semibold mb-4">
-            Stock Level Trends
+            Current Stock
           </Text>
-          <View className="h-52 bg-gray-100 rounded-lg justify-center items-center">
-            <Text className="text-sm text-gray-500">Stock Level Chart</Text>
-          </View>
-        </View>
-
-        <View className="m-4 p-4 bg-white rounded-2xl shadow-sm">
-          <Text className="text-lg text-zinc-900 font-semibold mb-4">
-            Stock Alerts
-          </Text>
-          {[1, 2, 3].map((item) => (
+          {stock.map((item) => (
             <View
-              key={item}
-              className="flex-row items-center py-3 border-b border-gray-100"
-            >
-              <View
-                className={`w-10 h-10 rounded-full justify-center items-center mr-3 ${
-                  item === 1 ? "bg-red-100" : "bg-yellow-100"
-                }`}
-              >
-                <AlertTriangle
-                  size={20}
-                  color={item === 1 ? "#EF4444" : "#F59E0B"}
-                />
-              </View>
-              <View className="flex-1">
-                <Text className="text-base text-zinc-900 font-semibold">
-                  {item === 1 ? "Out of Stock" : "Low Stock"}
-                </Text>
-                <Text className="text-sm text-gray-500">
-                  Product {item} -{" "}
-                  {item === 1 ? "0 units remaining" : "5 units remaining"}
-                </Text>
-              </View>
-            </View>
-          ))}
-        </View>
-
-        <View className="m-4 p-4 bg-white rounded-2xl shadow-sm">
-          <Text className="text-lg text-zinc-900 font-semibold mb-4">
-            Recent Stock Movements
-          </Text>
-          {[1, 2, 3].map((item) => (
-            <View
-              key={item}
+              key={Math.floor(100000 + Math.random() * 900000)}
               className="flex-row items-center py-3 border-b border-gray-100"
             >
               <View className="w-10 h-10 rounded-full bg-blue-100 justify-center items-center mr-3">
@@ -151,13 +101,12 @@ export default function StockReportScreen() {
               </View>
               <View className="flex-1">
                 <Text className="text-base text-zinc-900 font-semibold">
-                  Product {item}
+                  {item.product_name}
                 </Text>
                 <Text className="text-sm text-gray-500">
-                  {item % 2 === 0 ? "Stock In" : "Stock Out"} - {item * 5} units
+                  Stock - {item.quantity} units
                 </Text>
               </View>
-              <Text className="text-sm text-gray-400">2h ago</Text>
             </View>
           ))}
         </View>
