@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Text, View, ScrollView, TouchableOpacity } from "react-native";
+import { Text, View, ScrollView, TouchableOpacity, Alert } from "react-native";
 import {
   ArrowLeft,
   Package,
@@ -9,6 +9,9 @@ import {
   RefreshCw,
 } from "lucide-react-native";
 import { useNavigation } from "@react-navigation/native";
+import * as Notifications from "expo-notifications";
+import { v4 as uuid } from "uuid";
+import { saveReminder } from "../../Shared/ReminderManager";
 export default function StockReportScreen() {
   const navigation = useNavigation();
   const [metric, setMetric] = useState([]);
@@ -36,9 +39,48 @@ export default function StockReportScreen() {
     }
   }
   useEffect(() => {
-    GetReport();
+    (async () => {
+      const { status } = await Notifications.requestPermissionsAsync();
+      if (status !== "granted") {
+        Alert.alert("Permission denied", "Enable notifications in settings.");
+      }
+    })();
   }, []);
 
+  useEffect(() => {
+    GetReport();
+  }, []);
+  const scheduleReminder = async (productName, quantity) => {
+    // Schedule 5 seconds from now
+    const scheduledDate = new Date(Date.now() + 5000);
+
+    const notificationId = await Notifications.scheduleNotificationAsync({
+      content: {
+        title: `Stock Alert`,
+        body: `Stock for ${productName} is low (${quantity} units left)`,
+        sound: "default",
+      },
+      trigger: scheduledDate,
+    });
+
+    console.log("Scheduled Notification ID:", notificationId);
+
+    const id = uuid.v4();
+    await saveReminder({
+      id,
+      title,
+      time: scheduledDate.toLocaleTimeString(), // or scheduledDate.toISOString() for full time
+      notificationId,
+    });
+  };
+  useEffect(() => {
+    stock.map((item) => {
+      if (item.quantity <= item.reorder_level) {
+        scheduleReminder(item.product_name, item.quantity);
+        Alert.alert("S");
+      }
+    });
+  }, [stock]);
   return (
     <View className="flex-1 bg-gray-50">
       <View className="flex-row items-center px-6 pt-16 pb-5 bg-white border-b border-gray-100">

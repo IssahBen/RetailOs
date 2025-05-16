@@ -114,7 +114,10 @@ export default function POSScreen() {
         }
       })
       .catch((error) => {
-        console.error("Payment error:", error);
+        Alert.alert(
+          "Error",
+          "Failed to process payment. Please try again.Check Stock"
+        );
       });
     // Additional logic for handling successful payment
   };
