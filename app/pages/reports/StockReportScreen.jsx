@@ -77,7 +77,6 @@ export default function StockReportScreen() {
     stock.map((item) => {
       if (item.quantity <= item.reorder_level) {
         scheduleReminder(item.product_name, item.quantity);
-        Alert.alert("S");
       }
     });
   }, [stock]);

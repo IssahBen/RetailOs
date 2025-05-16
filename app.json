@@ -12,6 +12,10 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
+    "notification": {
+      "icon": "./assets/basket.png",
+      "color": "#3B82F6"
+    },
     "ios": {
       "supportsTablet": true
     },
