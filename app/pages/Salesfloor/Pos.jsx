@@ -25,6 +25,7 @@ import { useProduct } from "../../Context/ProductsContext";
 import { useRef } from "react";
 import SuccessMessage from "../../messages/SuccessMessage";
 import ErrorMessage from "../../messages/ErrorMessage";
+import InfoMessage from "../../messages/InfoMessage";
 export default function POSScreen() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
@@ -35,7 +36,9 @@ export default function POSScreen() {
   const Options = [...new Set(products.map((item) => item.category))];
   const [isLoading, setIsLoading] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
+  const [infoVisible, setInfoVisible] = useState(true);
   const [successMessage, setSuccessMessage] = useState("");
+  const [info, setInfo] = useState("Check Stock");
   const { buy } = useProduct();
   async function GetProducts() {
     try {
@@ -56,7 +59,7 @@ export default function POSScreen() {
       setProducts(data);
       return "success";
     } catch (error) {
-      Alert.alert("Error", "Failed to fetch data from the server.");
+      Alert.alert("Payment Unsuccessful Check Item Inventory Stock");
     }
   }
 
@@ -114,10 +117,7 @@ export default function POSScreen() {
         }
       })
       .catch((error) => {
-        Alert.alert(
-          "Error",
-          "Failed to process payment. Please try again.Check Stock"
-        );
+        setInfoVisible(true);
       });
     // Additional logic for handling successful payment
   };
@@ -137,6 +137,11 @@ export default function POSScreen() {
             visible={isVisible}
             setVisible={setIsVisible}
             successMessage={successMessage}
+          />
+          <InfoMessage
+            visible={infoVisible}
+            setVisible={setInfoVisible}
+            message={info}
           />
           <ErrorMessage />
         </View>

@@ -29,7 +29,7 @@ export default function StockReportScreen() {
       );
 
       const data = await res.json();
-
+      console.log(data);
       // Set the fetched data to state
       setMetric(data.metrics);
       setStock(data.current_stock);

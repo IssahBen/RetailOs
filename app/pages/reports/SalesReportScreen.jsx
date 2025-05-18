@@ -31,8 +31,8 @@ export default function SalesReportScreen() {
       // Set the fetched data to state
 
       setReport(data);
-      setMetrics(data.All);
-      setTopProducts(data.Top);
+      setMetrics(data.all);
+      setTopProducts(data.top);
       return "success";
     } catch (error) {
       Alert.alert("Error", "Failed to fetch data from the server.");
@@ -44,13 +44,13 @@ export default function SalesReportScreen() {
 
   useEffect(() => {
     if (selectedPeriod === "all") {
-      setMetrics(report.All);
+      setMetrics(report.all);
     } else if (selectedPeriod === "day") {
-      setMetrics(report.Day);
+      setMetrics(report.day);
     } else if (selectedPeriod === "week") {
-      setMetrics(report.Week);
+      setMetrics(report.week);
     } else if (selectedPeriod === "month") {
-      setMetrics(report.Month);
+      setMetrics(report.month);
     }
   }, [selectedPeriod, report]);
 
@@ -96,7 +96,7 @@ export default function SalesReportScreen() {
 
         {/* Metrics */}
         <View className="flex-row flex-wrap px-4 gap-4 mt-4">
-          {metrics.map((metric, index) => (
+          {metrics?.map((metric, index) => (
             <View
               key={index}
               className="flex-1 min-w-[45%] bg-white rounded-2xl p-4 shadow shadow-black/5"

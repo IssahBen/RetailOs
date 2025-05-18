@@ -8,14 +8,18 @@ import {
   RefreshCw,
 } from "lucide-react-native";
 import { useNavigation } from "@react-navigation/native";
-
+import DatePicker from "../../ui/DatePicker";
+import { formatDate } from "../../ui/Utils/dateUtils";
 export default function TransactionReportScreen() {
+  const [timeDate, setTimeDate] = useState(null);
+
   const navigation = useNavigation();
   const [selectedPeriod, setSelectedPeriod] = useState("day");
   const [metric, setMetric] = useState([]);
   const [transaction, setTransaction] = useState([]);
   const [report, setReport] = useState(null);
   const periods = ["day", "week", "month"];
+  const [query, setQuery] = useState([]);
   async function GetReport() {
     try {
       const res = await fetch(
@@ -141,6 +145,57 @@ export default function TransactionReportScreen() {
             Transactions
           </Text>
           {transaction?.map((transaction) => (
+            <View
+              key={transaction.id}
+              className="flex-row items-center py-3 border-b border-gray-100"
+            >
+              <View
+                className="w-10 h-10 rounded-full justify-center items-center mr-3"
+                style={{
+                  backgroundColor: "#10B98120",
+                }}
+              >
+                <DollarSign size={20} color={"#10B981"} />
+              </View>
+              <View className="flex-1">
+                <View className="flex-row justify-between items-center mb-1">
+                  <Text className="text-base font-semibold text-gray-900">
+                    {transaction?.product_name}
+                  </Text>
+                  <Text
+                    className="text-base font-semibold"
+                    style={{
+                      color: "#10B981",
+                    }}
+                  >
+                    +{transaction.total_value.toFixed(2)}
+                  </Text>
+                </View>
+                <View className="flex-row justify-between">
+                  <Text className="text-sm text-gray-500">Cash</Text>
+                  <Text className="text-sm text-gray-400">
+                    {transaction.date}
+                  </Text>
+                </View>
+              </View>
+            </View>
+          ))}
+        </View>
+        <View className="p-4">
+          <DatePicker
+            date={timeDate || new Date()}
+            onChange={setTimeDate}
+            placeholder="Select time"
+            mode="time"
+            label="Time "
+            setTransactions={setQuery}
+          />
+        </View>
+        <View className="m-4 p-4 bg-white rounded-2xl shadow-sm elevation-2">
+          <Text className="text-lg font-semibold text-gray-900 mb-4">
+            Day Transaction Tracker
+          </Text>
+          {query?.map((transaction) => (
             <View
               key={transaction.id}
               className="flex-row items-center py-3 border-b border-gray-100"
