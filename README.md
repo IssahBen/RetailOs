@@ -43,3 +43,13 @@
 ```bash
 git clone https://github.com/yourusername/retailos.git
 cd retailos
+# Clone the api
+git clone https://github.com/issahben/inventoryapi.git
+cd inventoryapi
+
+# Install dependencies
+bundle install
+
+# Setup DB
+rails db:create db:migrate
+
